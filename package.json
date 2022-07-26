@@ -1,0 +1,26 @@
+{
+	"author": "Andrey Chmerev <andrey@chmerev.com> (https://github.com/chmerev/)",
+	"name": "unisender-api",
+	"version": "1.0.0",
+	"description": "Package for working with the unisender.com API for sending emails.",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [
+		"unisender",
+		"email",
+		"unisender api"
+	],
+	"license": "MIT",
+	"devDependencies": {
+		"@typescript-eslint/eslint-plugin": "^5.31.0",
+		"@typescript-eslint/parser": "^5.31.0",
+		"eslint": "^8.20.0",
+		"typescript": "^4.7.4"
+	},
+	"dependencies": {
+		"axios": "^0.27.2"
+	},
+	"typings": ".lib/index.d.ts"
+}
