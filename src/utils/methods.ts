@@ -8,10 +8,11 @@ export const methods = {
 		exclude: 'exclude',
 		unsubscribe: 'unsubscribe',
 		importContacts: 'importContacts',
-		exportContacts: 'exportContacts',
+		exportContacts: 'async/exportContacts',
+		getTaskResult: 'async/getTaskResult',
 		getTotalContactsCount: 'getTotalContactsCount',
 		getContactCount: 'getContactCount',
-		getContact : 'getContact '
+		getContact : 'getContact'
 	},
 	additionalFieldsAndLabels: {
 		getFields: 'getFields',

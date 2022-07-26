@@ -5,3 +5,6 @@
 
 # compiled files
 /lib
+
+#test
+/src/test.ts

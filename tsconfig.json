@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "declaration": true,
-    "removeComments": true,
+    "removeComments": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
@@ -19,6 +19,6 @@
     "noFallthroughCasesInSwitch": false,
 		"esModuleInterop": true,
   },
-	"exclude": ["node_modules"],
+	"exclude": ["node_modules", "./src/test.ts"],
 	"include": ["src"],
 }
