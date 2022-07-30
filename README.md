@@ -46,14 +46,14 @@ const subscribe = await unisender.subscribe('541', 'andrey@chmerev.com', 'Andrey
 - [x]  deleteTag
 - [x]  createEmailMessage
 - [x]  createSmsMessage
-- [ ]  createCampaign
-- [ ]  cancelCampaign
-- [ ]  getActualMessageVersion
-- [ ]  sendSms
-- [ ]  checkSms
-- [ ]  sendEmail
-- [ ]  sendTestEmail
-- [ ]  checkEmail
+- [x]  createCampaign
+- [x]  cancelCampaign
+- [x]  getActualMessageVersion
+- [x]  sendSms
+- [x]  checkSms
+- [x]  sendEmail
+- [x]  sendTestEmail
+- [x]  checkEmail
 - [ ]  updateOptInEmail
 - [ ]  getWebVersion
 - [ ]  deleteMessage

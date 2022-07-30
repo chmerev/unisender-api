@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CreateListOptions, ResultResponse, List, EmptyObject, ImportContactsOptions, ImportContactsResult, SubscribeOptions, exportContactsOptions, exportContactsResult, getContactCountParameters, getContactCountResult, getContactOptions, getContactResult, getFieldsResult, createFieldOptions, FieldType, createEmailMessageOptions } from './interfaces/types';
+import { CreateListOptions, ResultResponse, List, EmptyObject, ImportContactsOptions, ImportContactsResult, SubscribeOptions, exportContactsOptions, exportContactsResult, getContactCountParameters, getContactCountResult, getContactOptions, getContactResult, getFieldsResult, createFieldOptions, FieldType, createEmailMessageOptions, createCampaignOptions, createCampaignResult, sendSmsResult, SendEmailOptions, checkEmailResult } from './interfaces/types';
 import { delay } from './utils/delay';
 import { methods } from './utils/methods';
 
@@ -488,7 +488,7 @@ class Unisender {
 	 * @param listId The code of the list on which the SMS will be sent. The codes of all lists can be obtained by calling getLists.
 	 * @param tag Label. If set, the message will not be sent to the entire list, but only to those recipients who are assigned the label. 
 	*/
-	async createSmsMessage(senderName: string, body: string, listId: number, tag?: string) {
+	async createSmsMessage(senderName: string, body: string, listId: number, tag?: string): Promise<ResultResponse<{message_id: number}>> {
 		const params = [];
 		params.push({sender: senderName});
 		params.push({body: body});
@@ -499,6 +499,202 @@ class Unisender {
 
 		const request = await this.sendRequest(methods.createAndSendMessage.createSmsMessage, paramsString);
 		
+		return request;
+	}
+
+	/** 
+	 * Schedule or start sending an e-mail or SMS message immediately.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/messages/createcampaign/)
+	 * 
+	 * @param messageId The code of the message to send. The code returned by createEmailMessage or createSmsMessage method should be passed.
+	 * @param options additional options.
+	*/
+	async createCampaign(messageId: number, options?: createCampaignOptions): Promise<ResultResponse<createCampaignResult>> {
+
+		const params = [];
+		params.push({message_id: messageId});
+
+		const paramsString = this.parameterСollection(params);
+
+		let optionsString = '';
+
+		options && Object.entries(options).forEach(([key, value]) => {
+			optionsString += `&${key}=${value}`;
+		})
+
+		const request = await this.sendRequest(methods.createAndSendMessage.createCampaign, paramsString + optionsString);
+
+		return request;
+	}
+
+	/** 
+	 * A method for cancelling a scheduled mailing.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/messages/cancel-campaign/)
+	 * 
+	 * @param campaignId The id of the mailing that you want to cancel.
+	*/
+	async cancelCampaign(campaignId: number): Promise<ResultResponse<EmptyObject>> {
+		const params = [];
+		params.push({campaign_id: campaignId});
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.createAndSendMessage.cancelCampaign, paramsString);
+
+		return request;
+	}
+
+	/** 
+	 * Method returns the id of the current version of the specified message.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/messages/get-actual-message-version/)
+	 * 
+	 * @param messageId The identifier of the message for which you want to get the id of the current version of the letter.
+	*/
+	async getActualMessageVersion(messageId: number): Promise<ResultResponse<{message_id: number, actual_version_id: number}>> {
+		const params = [];
+		params.push({message_id: messageId});
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.createAndSendMessage.getActualMessageVersion, paramsString);
+
+		return request;
+	}
+
+	/** 
+	 * A method for simply sending one SMS message to one or more recipients.
+	 * 
+	 * Maximum number of numbers to send SMS: 150 per call.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/messages/sendsms/)
+	 * 
+	 * @param phones The recipient's phone number in international format with a country code (you can omit the leading "+"). Example: "79031234567, 79031234567".
+	 * @param sender Sender - the registered name of the sender (alpha name). The string can contain from 3 to 11 Latin letters or numbers with letters. Special characters are also possible - dot, hyphen, dash and some others.
+	 * @param text Message text, up to 1000 characters. Type substitution characters are ignored.
+	*/
+	async sendSms(phones: string, sender: string, text: string) : Promise<ResultResponse<sendSmsResult>> {
+		const params = [];
+		params.push({phone: phones});
+		params.push({sender: sender});
+		params.push({text: text});
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.createAndSendMessage.sendSms, paramsString);
+
+		return request;
+	}
+
+	/** 
+	 * Returns a string - the status of sending an SMS message.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/messages/check-sms/)
+	 * 
+	 * @param smsId The message code returned by the sendSms method.
+	*/
+	async checkSms(smsId: number): Promise<ResultResponse<{status: string}>> {
+		const params = [];
+		params.push({sms_id: smsId});
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.createAndSendMessage.checkSms, paramsString);
+
+		return request;
+	}
+
+	/** 
+	 * A method for sending one individual email without using personalization and with limited statistical capabilities.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/messages/sendemail/)
+	 * 
+	 * @param email The address of the recipient of the message.
+	 * @param senderName The sender's name. An arbitrary string, displayed in the "From whom" field of the email client.
+	 * @param senderEmail E-mail address of the sender.
+	 * @param subject The subject line of the email.
+	 * @param body The text of the email is in HTML format as a string.
+	 * @param listId The list code from which the recipient will be prompted to unsubscribe if he or she clicks the unsubscribe link.
+	 * @param options additional options.
+	*/
+	async sendEmail(email: string, senderName: string, senderEmail: string, subject: string, body: string, listId: number, options?: SendEmailOptions): Promise<ResultResponse<{email_id: string}>>{
+		const params = [];
+		params.push({email: email});
+		params.push({sender_name: senderName});
+		params.push({sender_email: senderEmail});
+		params.push({subject: subject});
+		params.push({body: body});
+		params.push({list_id: listId});
+
+		const paramsString = this.parameterСollection(params);
+
+		let optionsString = '';
+
+		options && Object.entries(options).forEach(([key, value]) => {
+			const paramsForAdditionalProcessing = ['attachments', 'metadata'];
+			if (!paramsForAdditionalProcessing.includes(key)) {
+				optionsString += `&${key}=${value}`;
+			}
+		})
+
+		let attachmentsString = '';
+
+		options?.attachments && options.attachments.forEach(() => {
+			Object.entries(options.attachments).forEach(([, value]) => {
+				attachmentsString += `&attachments[${value.name}]=${value.content}`;
+			})
+		})
+
+		let metadataString = '';
+
+		options?.metadata && options.metadata.forEach(() => {
+			Object.entries(options.metadata).forEach(([, value]) => {
+				metadataString += `&metadata[${value.name}]=${value.value}`;
+			})
+		})
+
+		const request = await this.sendRequest(methods.createAndSendMessage.sendEmail, paramsString + optionsString + attachmentsString + metadataString);
+
+		return request;
+	}
+
+	/** 
+	 * A method for sending a test email. You can only send an already created email.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/messages/sendtestemail/)
+	 * 
+	 * @param email The address of the recipient of the message. You can send to multiple comma-separated addresses.
+	 * @param idMail The identifier of an email message created earlier. (For example, using the createEmailMessage method).
+	*/
+	async sendTestEmail(email: string, idMail: number): Promise<ResultResponse<{ [key: string]: { success: boolean } }>>{
+		const params = [];
+		params.push({email: email});
+		params.push({id: idMail});
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.createAndSendMessage.sendTestEmail, paramsString);
+
+		return request;
+	}
+
+	/** 
+	 * The method allows you to check the delivery status of emails sent by the sendEmail method.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/messages/check-email/)
+	 * 
+	 * @param emailId The message code returned by the sendEmail method. You can specify up to 500 comma-separated email codes.
+	*/
+	async checkEmail(emailId: string): Promise<ResultResponse<checkEmailResult>> {
+		const params = [];
+		params.push({email_id: emailId});
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.createAndSendMessage.checkEmail, paramsString);
+
 		return request;
 	}
 }

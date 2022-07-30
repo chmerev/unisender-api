@@ -130,3 +130,50 @@ export interface createEmailMessageOptions {
 	system_template_id?: number;
 	wrap_type?: 'skip' | 'right' | 'left' | 'center';
 }
+
+export interface createCampaignOptions {
+	start_time?: string;
+	timezone?: string;
+	track_read?: 0 | 1;
+	track_links?: 0 | 1;
+	contacts?: 'string'
+	contacts_url?: string;
+	track_ga?: 0 | 1;
+	payment_limit?: number;
+	payment_currency?: string;
+	ga_medium?: string;
+	ga_source?: string;
+	ga_campaign?: string;
+	ga_content?: string;
+	ga_term?: string;
+}
+
+export interface createCampaignResult {
+	campaign_id: number;
+	status: 'scheduled' | 'waits_censor';
+	count: number;
+}
+
+export interface sendSmsResult {
+	currency: string;
+	price: number;
+	sms_id: number;
+}
+
+export interface SendEmailOptions {
+	lang?: string;
+	track_read?: 0 | 1;
+	track_links?: 0 | 1;
+	cc?: string;
+	headers?: string;
+	images_as?: 'attachments' | 'only_links' | 'user_default';
+	ref_key?: string;
+	error_checking?: 0 | 1;
+	attachments?: {name: string, content: string}[];
+	metadata?: {name: string, value: string}[];
+}
+
+export interface checkEmailResult {
+	statuses: { id: string; status: string;}[];
+	failed_email_id: {[key: string]: string}[];
+}
