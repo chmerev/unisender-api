@@ -1,7 +1,7 @@
 {
 	"author": "Andrey Chmerev <andrey@chmerev.com> (https://github.com/chmerev/)",
 	"name": "unisender-api",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "Package for working with the unisender.com API for sending emails.",
 	"main": "./lib/index.js",
 	"typings": "./lib/index.d.ts",
@@ -24,7 +24,7 @@
 		"axios": "^0.27.2"
 	},
 	"repository": {
-    "type": "git",
-    "url": "https://github.com/chmerev/unisender-api.git"
-  }
+		"type": "git",
+		"url": "https://github.com/chmerev/unisender-api.git"
+	}
 }

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CreateListOptions, ResultResponse, List, EmptyObject, ImportContactsOptions, ImportContactsResult, SubscribeOptions, exportContactsOptions, exportContactsResult, getContactCountParameters, getContactCountResult, getContactOptions, getContactResult } from './interfaces/types';
+import { CreateListOptions, ResultResponse, List, EmptyObject, ImportContactsOptions, ImportContactsResult, SubscribeOptions, exportContactsOptions, exportContactsResult, getContactCountParameters, getContactCountResult, getContactOptions, getContactResult, getFieldsResult, createFieldOptions, FieldType, createEmailMessageOptions } from './interfaces/types';
 import { delay } from './utils/delay';
 import { methods } from './utils/methods';
 
@@ -17,7 +17,9 @@ class Unisender {
 		const url = new URL(`${this.apiUrl}${method}?format=json&api_key=${this.apiKey}${params ? params : ''}`);
 
 		try {
-			const {data} = await axios.post(url.href);
+			const {data} = await axios.post(url.href, {
+				headers: { 'Content-Type': 'multipart/form-data' }
+			});
 			return data;
 		} catch(e) {
 			return new Error(e?.response?.data);
@@ -350,6 +352,153 @@ class Unisender {
 
 		const request = await this.sendRequest(methods.contactLists.getContact, paramsString + optionsString);
 
+		return request;
+	}
+
+	/** 
+	 * A method to get a list of custom fields. 
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/inputs/getfields/)
+	*/
+	async getFields(): Promise<ResultResponse<getFieldsResult[]>>{
+		const request = await this.sendRequest(methods.additionalFieldsAndLabels.getFields);
+
+		return request;
+	}
+
+	/** 
+	 * A method for creating a new custom field, the value of which can be set for each recipient and it can then be substituted in the email. 
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/inputs/createfield/)
+	 * 
+	 * @param name Variable for substitution. Must be unique, case-sensitive. It's also not recommended to create a field with a name that matches one of the names of standard fields (tags, email, phone, email_status, phone_status, etc.)..
+	 * @param type Type of the field. Possible values: string, text, number, date, bool.
+	 * @param options additional options. public_name
+	*/
+	async createField(name: string, type: FieldType, options?: createFieldOptions): Promise<ResultResponse<{id: number}>>{
+		const params = [];
+		params.push({name: name});
+		params.push({type: type});
+
+		const paramsString = this.parameterСollection(params);
+
+		let optionsString = '';
+
+		options && Object.entries(options).forEach(([key, value]) => {
+			optionsString += `&${key}=${value}`;
+		})
+
+		const request = await this.sendRequest(methods.additionalFieldsAndLabels.createField, paramsString + optionsString);
+
+		return request;
+	}
+
+	/** 
+	 * A method for changing the parameters of a custom field. 
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/inputs/updatefield/)
+	 * 
+	 * @param id The id of the field to be changed.
+	 * @param name Variable for substitution. Must be unique, case-sensitive. It's also not recommended to create a field with a name that matches one of the names of standard fields (tags, email, phone, email_status, phone_status, etc.)..
+	 * @param options additional options. public_name
+	*/
+	async updateField(id: number, name: string, options?: createFieldOptions): Promise<ResultResponse<{id: number}>>{
+		const params = [];
+		params.push({id: id});
+		params.push({name: name});
+
+		const paramsString = this.parameterСollection(params);
+
+		let optionsString = '';
+
+		options && Object.entries(options).forEach(([key, value]) => {
+			optionsString += `&${key}=${value}`;
+		})
+
+		const request = await this.sendRequest(methods.additionalFieldsAndLabels.updateField, paramsString + optionsString);
+
+		return request;
+	}
+
+	/** 
+	 * A method for delete field. 
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/inputs/deletefield/)
+	 * 
+	 * @param id The id of the field to be changed.
+	*/
+	async deleteField(id: number): Promise<ResultResponse<EmptyObject>> {
+		const params = [];
+		params.push({id: id});
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.additionalFieldsAndLabels.deleteField, paramsString);
+
+		return request;
+	}
+
+	/** 
+	 * A method for creating an e-mail message without sending it.
+	 * Note that the maximum size of an e-mail message is 8mb.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/messages/createemailmessage/)
+	 * 
+	 * @param senderName Sender name. Example: "Andrey Chmerev".
+	 * @param senderEmail Sender e-mail. Example: "andrey@chmerev.com".
+	 * @param listId The code of the list, which will be used to send the mailing list.
+	 * @param options additional options.
+	 * @param attachments A list of attachments. {name: "file.pdf", content: "the binary content of the file."}
+	 * 
+	*/
+	async createEmailMessage(senderName: string, senderEmail: string, listId: number, options: createEmailMessageOptions, attachments?: {name: string, content: string}[]): Promise<ResultResponse<{message_id: number}>>{
+		const params = [];
+		params.push({sender_name: senderName});
+		params.push({sender_email: senderEmail});
+		params.push({list_id: listId});
+
+		const paramsString = this.parameterСollection(params);
+
+		let optionsString = '';
+
+		options && Object.entries(options).forEach(([key, value]) => {
+			optionsString += `&${key}=${value}`;
+		})
+
+		let attachmentsString = '';
+
+		attachments && attachments.forEach(() => {
+			Object.entries(attachments).forEach(([, value]) => {
+				attachmentsString += `&attachments[${value.name}]=${value.content}`;
+			})
+		})
+
+		const request = await this.sendRequest(methods.createAndSendMessage.createEmailMessage, paramsString + optionsString + attachmentsString);
+
+		return request;
+	}
+
+	/** 
+	 * A method for creating an SMS message without sending it.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/messages/createsmsmessage/)
+	 * 
+	 * @param senderName The sender's name is from 3 to 11 Latin letters and numbers. The name must be registered with the support service.
+	 * @param body Message text with the ability to add wildcard fields.
+	 * @param listId The code of the list on which the SMS will be sent. The codes of all lists can be obtained by calling getLists.
+	 * @param tag Label. If set, the message will not be sent to the entire list, but only to those recipients who are assigned the label. 
+	*/
+	async createSmsMessage(senderName: string, body: string, listId: number, tag?: string) {
+		const params = [];
+		params.push({sender: senderName});
+		params.push({body: body});
+		params.push({list_id: listId});
+		tag && params.push({tag: tag});
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.createAndSendMessage.createSmsMessage, paramsString);
+		
 		return request;
 	}
 }

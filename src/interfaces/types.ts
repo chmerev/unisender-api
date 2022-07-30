@@ -43,23 +43,9 @@ export interface SubscribeOptions {
 	overwrite?: 0 | 1 | 2;
 }
 
-enum EmailStatus {
-	new,
-	invited,
-	active,
-	inactive,
-	unsubscribed,
-	blocked,
-	activation_requested
-}
+type EmailStatus = 'new' | 'invited' | 'active' | 'inactive' | 'unsubscribed' | 'blocked' | 'activation_requested';
 
-enum PhoneStatus {
-	new,
-	active,
-	inactive,
-	unsubscribed,
-	blocked
-}
+type PhoneStatus = 'new' | 'active' | 'inactive' | 'unsubscribed' | 'blocked';
 
 export interface exportContactsOptions {
 	notify_url?: string;
@@ -117,4 +103,30 @@ export interface getContactResult {
 	email: Email;
 	fields: {[key: string]: string};
 	lists: ListContact[];
+}
+
+export interface getFieldsResult {
+	id: number;
+	name: string;
+	type: string;
+	is_visible: number;
+	view_pos: number;
+}
+
+export type FieldType = 'string' | 'text' | 'number' | 'date' | 'bool' ;
+
+export interface createFieldOptions {
+	public_name?: string;
+}
+
+export interface createEmailMessageOptions {
+	subject?: string;
+	body?: string;
+	text_body?: string;
+	generate_text?: 0 | 1;
+	tag?: string;
+	lang?: string;
+	template_id?: number;
+	system_template_id?: number;
+	wrap_type?: 'skip' | 'right' | 'left' | 'center';
 }

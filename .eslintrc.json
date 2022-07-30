@@ -19,7 +19,7 @@
 		"@typescript-eslint/no-var-requires": 1,
 		"max-lines": [
 			1,
-			500
+			1000
 		],
 		"no-trailing-whitespace": 0,
 		"quotes": [
