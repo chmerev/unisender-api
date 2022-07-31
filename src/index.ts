@@ -5,8 +5,8 @@ import { methods } from './utils/methods';
 
 /** Initiate your Unisender account. */
 class Unisender {
-	apiKey: string;
-	readonly apiUrl = 'https://api.unisender.com/ru/api/';
+	private apiKey: string;
+	private apiUrl = 'https://api.unisender.com/ru/api/';
 
 	constructor(apiKey: string) {
 		this.apiKey = apiKey;
