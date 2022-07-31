@@ -47,7 +47,7 @@ export const methods = {
 		listTemplates: 'listTemplates'
 	},
 	statistics: {
-		getCampaignDeliveryStats: 'getCampaignDeliveryStats',
+		getCampaignDeliveryStats: 'async/getCampaignDeliveryStats',
 		getCampaignCommonStats: 'getCampaignCommonStats',
 		getVisitedLinks: 'getVisitedLinks',
 		getCampaigns: 'getCampaigns',

@@ -54,24 +54,24 @@ const subscribe = await unisender.subscribe('541', 'andrey@chmerev.com', 'Andrey
 - [x]  sendEmail
 - [x]  sendTestEmail
 - [x]  checkEmail
-- [ ]  updateOptInEmail
-- [ ]  getWebVersion
-- [ ]  deleteMessage
-- [ ]  updateEmailMessage
-- [ ]  createEmailTemplate
-- [ ]  updateEmailTemplate
-- [ ]  deleteTemplate
-- [ ]  getTemplate
-- [ ]  getTemplates
-- [ ]  listTemplates
-- [ ]  getCampaignDeliveryStats
-- [ ]  getCampaignCommonStats
-- [ ]  getVisitedLinks
-- [ ]  getCampaigns
-- [ ]  getCampaignStatus
-- [ ]  getMessages
-- [ ]  getMessage
-- [ ]  listMessages
+- [x]  updateOptInEmail
+- [x]  getWebVersion
+- [x]  deleteMessage
+- [x]  updateEmailMessage
+- [x]  createEmailTemplate
+- [x]  updateEmailTemplate
+- [x]  deleteTemplate
+- [x]  getTemplate
+- [x]  getTemplates
+- [x]  listTemplates
+- [x]  getCampaignDeliveryStats
+- [x]  getCampaignCommonStats
+- [x]  getVisitedLinks
+- [x]  getCampaigns
+- [x]  getCampaignStatus
+- [x]  getMessages
+- [x]  getMessage
+- [x]  listMessages
 
 ## License
 

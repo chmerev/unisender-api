@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CreateListOptions, ResultResponse, List, EmptyObject, ImportContactsOptions, ImportContactsResult, SubscribeOptions, exportContactsOptions, exportContactsResult, getContactCountParameters, getContactCountResult, getContactOptions, getContactResult, getFieldsResult, createFieldOptions, FieldType, createEmailMessageOptions, createCampaignOptions, createCampaignResult, sendSmsResult, SendEmailOptions, checkEmailResult } from './interfaces/types';
+import { CreateListOptions, ResultResponse, List, EmptyObject, ImportContactsOptions, ImportContactsResult, SubscribeOptions, exportContactsOptions, exportContactsResult, getContactCountParameters, getContactCountResult, getContactOptions, getContactResult, getFieldsResult, createFieldOptions, FieldType, createEmailMessageOptions, createCampaignOptions, createCampaignResult, sendSmsResult, SendEmailOptions, checkEmailResult, getWebVersionResult, updateEmailMessageOptions, createEmailTemplateOptions, updateEmailTemplateOptions, getTemplateOptions, getTemplateResult, getTemplatesOptions, listTemplatesResult, getCampaignDeliveryStatsOptions, getCampaignDeliveryStatsResult, getVisitedLinksResult, getCampaignsOptions, getCampaignsResult, getCampaignStatusResult, getMessagesOptions, getMessagesResult, getMessageResult, listMessagesResult } from './interfaces/types';
 import { delay } from './utils/delay';
 import { methods } from './utils/methods';
 
@@ -694,6 +694,434 @@ class Unisender {
 		const paramsString = this.parameterСollection(params);
 
 		const request = await this.sendRequest(methods.createAndSendMessage.checkEmail, paramsString);
+
+		return request;
+	}
+
+	/** 
+	 * You can use the updateOptInEmail method to change the text of the email. The text must include at least one link with the href="{{ConfirmUrl}}".
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/messages/updateoptinemail/)
+	 * 
+	 * @param senderName Sender's name.
+	 * @param senderEmail Sender's email.
+	 * @param subject A string with the subject of the email. May include wildcard fields.
+	 * @param body HTML-formatted email text with the ability to add wildcard fields.
+	 * @param listId The code of the list to which this email will be sent when subscribed. The codes of all lists can be obtained by calling getLists.
+	*/
+	async updateOptInEmail(senderName: string, senderEmail: string, subject: string, body: string, listId: number): Promise<ResultResponse<EmptyObject>>{
+		const params = [];
+		params.push({sender_name: senderName});
+		params.push({sender_email: senderEmail});
+		params.push({subject: subject});
+		params.push({body: body});
+		params.push({list_id: listId});
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.createAndSendMessage.updateOptInEmail, paramsString);
+
+		return request;
+	}
+
+	/** 
+	 * A method for getting a link to the web version of an email.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/messages/getwebversion/)
+	 * 
+	 * @param campaignId The identifier of an existing campaign.
+	 * @param format The output format takes the values html | json, by default json (html format is intended only for visual viewing of the result, the parser in this format will not work).
+	*/
+	async getWebVersion(campaignId: number, format?: 'json' | 'html'): Promise<ResultResponse<getWebVersionResult>>{
+		const params = [];
+		params.push({campaign_id: campaignId});
+		format&& params.push({format: format});
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.createAndSendMessage.getWebVersion, paramsString);
+
+		return request;
+	}
+
+	/** 
+	 * A method for deleting a message.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/messages/deletemessage/)
+	 * 
+	 * @param messageId Message code.
+	*/
+	async deleteMessage(messageId: number): Promise<ResultResponse<EmptyObject>>{
+		const params = [];
+		params.push({message_id: messageId});
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.createAndSendMessage.deleteMessage, paramsString);
+
+		return request;
+	}
+
+	/** 
+	 * A method for editing an existing email message (without sending it). You can create a new email message using the createEmailMessage method.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/messages/updateemailmessage/)
+	 * 
+	 * @param messageId Message code.
+	 * @param options additional options.
+	*/
+	async updateEmailMessage(messageId: number, options?: updateEmailMessageOptions): Promise<ResultResponse<{message_id: number}>> {
+		const params = [];
+		params.push({message_id: messageId});
+
+		const paramsString = this.parameterСollection(params);
+
+		let optionsString = '';
+
+		options && Object.entries(options).forEach(([key, value]) => {
+			optionsString += `&${key}=${value}`;
+		})
+
+		const request = await this.sendRequest(methods.createAndSendMessage.updateEmailMessage, paramsString + optionsString);
+
+		return request;
+	}
+
+	/** 
+	 * A method for creating an email template for a mass mailing. You can use the updateEmailTemplate method to edit an existing template.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/templates/createemailtemplate/)
+	 * 
+	 * @param title Template name.
+	 * @param subject A string with the subject of the email. May include wildcard fields.
+	 * @param body The text of the email template in HTML format with the ability to add wildcard fields.
+	 * @param options additional options.
+	*/
+	async createEmailTemplate(title: string, subject: string, body: string, options?: createEmailTemplateOptions): Promise<ResultResponse<{template_id: number, warnings: {[key: string]: string}[]}>> {
+		const params = [];
+		params.push({title: title});
+		params.push({subject: subject});
+		params.push({body: body});
+
+		const paramsString = this.parameterСollection(params);
+
+		let optionsString = '';
+
+		options && Object.entries(options).forEach(([key, value]) => {
+			optionsString += `&${key}=${value}`;
+		})
+
+		const request = await this.sendRequest(methods.templates.createEmailTemplate, paramsString + optionsString);
+
+		return request;
+	}
+
+	/** 
+	 * A method for editing an email template for a mass mailing created using the createEmailTemplate method.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/templates/updateemailtemplate/)
+	 * 
+	 * @param templateId Template ID, can be obtained by calling the createEmailTemplate, getTemplate, getTemplates, listTemplates methods.
+	 * @param options additional options.
+	*/
+	async updateEmailTemplate(templateId: number, options?: updateEmailTemplateOptions): Promise<ResultResponse<{warnings: {[key: string]: string}[]}>> {
+		const params = [];
+		params.push({template_id: templateId});
+
+		const paramsString = this.parameterСollection(params);
+
+		let optionsString = '';
+
+		options && Object.entries(options).forEach(([key, value]) => {
+			optionsString += `&${key}=${value}`;
+		})
+
+		const request = await this.sendRequest(methods.templates.updateEmailTemplate, paramsString + optionsString);
+
+		return request;
+	}
+
+	/** 
+	 * A method for removing a template.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/templates/deletetemplate/)
+	 * 
+	 * @param templateId Template ID, can be obtained by calling the createEmailTemplate, getTemplate, getTemplates, listTemplates methods.
+	*/
+	async deleteTemplate(templateId: number): Promise<ResultResponse<EmptyObject>> {
+		const params = [];
+		params.push({template_id: templateId});
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.templates.deleteTemplate, paramsString);
+
+		return request;
+	}
+
+	/** 
+	 * The method returns information about the specified template.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/templates/gettemplate/)
+	 * 
+	 * @param templateId Template ID, can be obtained by calling the createEmailTemplate, getTemplate, getTemplates, listTemplates methods.
+	 * @param options additional options.
+	*/
+	async getTemplate(templateId: number, options?: getTemplateOptions): Promise<ResultResponse<getTemplateResult>> {
+		const params = [];
+		params.push({template_id: templateId});
+
+		const paramsString = this.parameterСollection(params);
+
+		let optionsString = '';
+
+		options && Object.entries(options).forEach(([key, value]) => {
+			optionsString += `&${key}=${value}`;
+		})
+
+		const request = await this.sendRequest(methods.templates.getTemplate, paramsString + optionsString);
+
+		return request;
+	}
+
+	/** 
+	 * This method is used to get the list of all templates created both through the personal UniSender account and through API.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/templates/gettemplates/)
+	 * 
+	 * @param options additional options.
+	*/
+	async getTemplates(options?: getTemplatesOptions): Promise<ResultResponse<getTemplateResult[]>> {
+
+		let optionsString = '';
+
+		options && Object.entries(options).forEach(([key, value]) => {
+			optionsString += `&${key}=${value}`;
+		})
+
+		const request = await this.sendRequest(methods.templates.getTemplates, optionsString);
+
+		return request;
+	}
+
+	/** 
+	 * This method is used to get the list of all templates created both through personal UniSender account and through API. The method works like getTemplates, the only difference is that listTemplates does not return body parameter. To get the body use getTemplate method.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/templates/listtemplates/)
+	 * 
+	 * @param options additional options.
+	*/
+	async listTemplates(options?: getTemplatesOptions): Promise<ResultResponse<listTemplatesResult[]>> {
+
+		let optionsString = '';
+
+		options && Object.entries(options).forEach(([key, value]) => {
+			optionsString += `&${key}=${value}`;
+		})
+
+		const request = await this.sendRequest(methods.templates.listTemplates, optionsString);
+
+		return request;
+	}
+
+	/** 
+	 * Get a report on the results of message delivery in the specified mailing list.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/statistics/getcampaigndeliverystats/)
+	 * 
+	 * @param campaignId The identifier of the campaign obtained by calling the createCampaign method.
+	 * @param options additional options
+	 * @returns A link for download to the exported file.
+	*/
+	async getCampaignDeliveryStats(campaignId: number, options?:getCampaignDeliveryStatsOptions): Promise<string>{
+
+		let filedsString = '';
+
+		options?.field_ids && options.field_ids.forEach(field => {
+			filedsString += `&field_ids[]=${field}`;
+		})
+
+		const params = [];
+		params.push({campaign_id: campaignId});
+
+		options && Object.entries(options).forEach(([key, value]) => {
+			const paramsForAdditionalProcessing = ['field_ids'];
+			if (!paramsForAdditionalProcessing.includes(key)) {
+				params.push({[key]: value});
+			}
+		})
+
+		const paramsString = this.parameterСollection(params);
+
+		const request: ResultResponse<exportContactsResult> = await this.sendRequest(methods.statistics.getCampaignDeliveryStats, filedsString + paramsString);
+
+		if (request?.result.status !== 'new') {
+			throw new Error('An error occurred when creating a task for export. Please try again later.');
+		}
+
+		let completed = false;
+		let urlForDownload = '';
+
+		while (!completed) {
+			const checkStatus: ResultResponse<exportContactsResult> = await this.sendRequest(methods.contactLists.getTaskResult, `&task_uuid=${request.result.task_uuid}`);
+
+			if (checkStatus.result.status === 'completed') {
+				completed = true;
+				urlForDownload = checkStatus.result.file_to_download;
+			}
+
+			const workStatuses = ['completed', 'processing'];
+
+			if (!workStatuses.includes(checkStatus.result.status)) {
+				throw new Error('An error occurred while waiting for a file link.');
+			}
+
+			await delay(10);
+		}
+
+		return urlForDownload;
+
+	}
+
+	/** 
+	 * Get general information about message delivery results of the specified mailing. The method returns statistics similar to "Newsletters" - "Sent reports" of UniSender cabinet.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/statistics/get-campaign-common-stats/)
+	 * 
+	 * @param campaignId The identifier of the campaign obtained by calling the createCampaign method.
+	*/
+	async getCampaignCommonStats(campaignId: number): Promise<ResultResponse<getCampaignDeliveryStatsResult>>{
+		const params = [];
+		params.push({campaign_id: campaignId});
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.statistics.getCampaignCommonStats, paramsString);
+
+		return request;
+	}
+
+	/** 
+	 * Get a report on the links visited by users in the specified email newsletter.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/statistics/getvisitedlinks/)
+	 * 
+	 * @param campaignId The identifier of the campaign obtained by calling the createCampaign method.
+	*/
+	async getVisitedLinks(campaignId: number, group?:string): Promise<ResultResponse<getVisitedLinksResult>>{
+		const params = [];
+		params.push({campaign_id: campaignId});
+		group && params.push({group: group});
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.statistics.getVisitedLinks, paramsString);
+
+		return request;
+	}
+
+	/** 
+	 * A method for getting a list of all available mailings. The number of mailings you can receive at a time is limited to 10000. To get the full list of mailings if their number is more than 10000, use parameters from and to.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/statistics/getcampaigns/)
+	 * 
+	 * @param options additional options.
+	*/
+	async getCampaigns(options?: getCampaignsOptions): Promise<ResultResponse<getCampaignsResult[]>> {
+		
+		let optionsString = '';
+
+		options && Object.entries(options).forEach(([key, value]) => {
+			optionsString += `&${key}=${value}`;
+		})
+
+		const request = await this.sendRequest(methods.statistics.getCampaigns, optionsString);
+
+		return request;
+	}
+
+	/** 
+	 * Find out the status of the mailing list created by the createCampaign method.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/statistics/getcampaignstatus/)
+	 * 
+	 * @param campaignId The distribution code obtained by the createCampaign method.
+	*/
+	async getCampaignStatus(campaignId: number): Promise<ResultResponse<getCampaignStatusResult>> {
+		const params = [];
+		params.push({campaign_id: campaignId});
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.statistics.getCampaignStatus, paramsString);
+
+		return request;
+	}
+
+	/** 
+	 * This method is used to get the list of mails created both through the personal UniSender cabinet and through API (createEmailMessage + createCampaign etc.)
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/statistics/getmessages/)
+	 * 
+	 * @param dateFrom the creation date is greater than, the format is yyyyy-mm-dd hh:mm UTC.
+	 * @param dateTo the creation date is less than, the format is yyyyy-mm-dd hh:mm UTC.
+	 * @param options additional options.
+	*/
+	async getMessages(dateFrom: string, dateTo: string, options?: getMessagesOptions): Promise<ResultResponse<getMessagesResult[]>> {
+		const params = [];
+		params.push({date_from: dateFrom});
+		params.push({date_to: dateTo});
+
+		options && Object.entries(options).forEach(([key, value]) => {
+			params.push({[key]: value});
+		})
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.statistics.getMessages, paramsString);
+
+		return request;
+	}
+
+	/** 
+	 * A method for getting information about an SMS or email message.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/statistics/getmessages/)
+	 * 
+	 * @param messageId message identifier.
+	*/
+	async getMessage(messageId: number): Promise<ResultResponse<getMessageResult[]>> {
+		const params = [];
+		params.push({id: messageId});
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.statistics.getMessage, paramsString);
+
+		return request;
+	}
+
+	/** 
+	 * This method is used to get a list of all messages created both through personal UniSender account and through API. The method works like getMessages, unlike listMessages - it doesn't return message body and attachments, but it returns user login.
+	 * 
+	 * [More information](https://www.unisender.com/ru/support/api/statistics/listmessages/)
+	 * 
+	 * @param dateFrom the creation date is greater than, the format is yyyyy-mm-dd hh:mm UTC.
+	 * @param dateTo the creation date is less than, the format is yyyyy-mm-dd hh:mm UTC.
+	 * @param options additional options.
+	*/
+	async listMessages(dateFrom: string, dateTo: string, options?: getMessagesOptions): Promise<ResultResponse<listMessagesResult[]>> {
+		const params = [];
+		params.push({date_from: dateFrom});
+		params.push({date_to: dateTo});
+
+		options && Object.entries(options).forEach(([key, value]) => {
+			params.push({[key]: value});
+		})
+
+		const paramsString = this.parameterСollection(params);
+
+		const request = await this.sendRequest(methods.statistics.listMessages, paramsString);
 
 		return request;
 	}

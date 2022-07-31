@@ -177,3 +177,168 @@ export interface checkEmailResult {
 	statuses: { id: string; status: string;}[];
 	failed_email_id: {[key: string]: string}[];
 }
+
+export interface getWebVersionResult {
+	letter_id: number;
+	web_letter_link: string;
+}
+
+export interface updateEmailMessageOptions {
+	sender_name?: string;
+	sender_email?: string;
+	subject?: string;
+	body?: string;
+	list_id?: number;
+	text_body?: string;
+	lang?: string;
+	categories?: string;
+}
+
+export interface createEmailTemplateOptions {
+	description?: string;
+	text_body?: string;
+	lang?: string;
+}
+
+export interface updateEmailTemplateOptions extends createEmailTemplateOptions {
+	title?: string;
+	subject?: string;
+	body?: string;
+}
+
+export interface getTemplateOptions {
+	system_template_id?: number;
+	format?: 'html' | 'json';
+}
+
+export interface listTemplatesResult {
+	id: string;
+	sub_user_login: string;
+	title: string;
+	description: string;
+	lang_code: string;
+	subject: string;
+	attachments: string;
+	screenshot_url: string;
+	fullsize_screenshot_url: string;
+	created: string;
+	updated: string;
+	message_format: string;
+	type: string;
+	raw_body: string;
+}
+
+export interface getTemplateResult extends listTemplatesResult {
+	body: string;
+}
+
+export interface getTemplatesOptions { 
+	type?: 'system' | 'user';
+	date_from?: string;
+	date_to?: string;
+	format?: 'html' | 'json';
+	limit?: number;
+	offset?: number;
+}
+
+export interface getCampaignDeliveryStatsOptions {
+	notify_url?: string;
+	changed_since?: string;
+	field_ids?: string[];
+}
+
+export interface getCampaignDeliveryStatsResult {
+	total: number;
+	sent: number;
+	delivered: number;
+	read_unique: number;
+	read_all: number;
+	clicked_unique: number;
+	clicked_all: number;
+	unsubscribed: number;
+	spam: number;
+}
+
+export interface getVisitedLinksResult {
+	fields: string[];
+	data: string[][];
+}
+
+export interface getCampaignsOptions {
+	from?: string;
+	to?: string;
+	limit?: number;
+	offset?: number;
+}
+
+export interface getCampaignsResult {
+	id: number;
+	start_time: string;
+	status: string;
+	message_id: number;
+	list_id: number;
+	subject: string;
+	sender_name: string;
+	sender_email: string;
+	stats_url: string;
+}
+
+export interface getCampaignStatusResult {
+	status: string;
+	status_comment: string;
+	creation_time: string;
+	start_time: string;
+}
+
+export interface getMessagesOptions {
+	format?: 'html' | 'json';
+	limit?: number;
+	offset?: number;
+}
+
+interface Attachments {
+	isInline: boolean;
+    name: string,
+    size: number,
+    url: string,
+}
+
+export interface listMessagesResult {
+	id: number;
+	sub_user_login: string;
+	list_id: number;
+	segment_id?: any;
+	created: string;
+	updated: string;
+	service_type: string;
+	active_version_id?: any;
+	lang_code: string;
+	sender_email: string;
+	sender_name: string;
+	subject: string;
+	message_format: string;
+}
+
+export interface getMessagesResult extends listMessagesResult {
+	body: string;
+	attachments: Attachments[];
+}
+
+export interface getMessageResult {
+	id: string;
+	sub_user_login?: string | null;
+	list_id: string;
+	created: string;
+	last_update: string;
+	service_type: 'email' | 'sms';
+	lang_code: string;
+	active_version_id?: any;
+	message_format: string;
+	wrap_type: string;
+	images_behavior: string;
+	sender_email: string;
+	sender_name: string;
+	subject: string;
+	body: string;
+	text_body: string;
+}
